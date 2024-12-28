@@ -321,4 +321,4 @@ def setup_gui():
 
 if _name_ == "_main_":
 
-    setup_gui
+    setup_gui()
