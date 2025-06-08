@@ -101,7 +101,7 @@ def display_message(message, sender=None, self_message=False, file_sent=False, f
     x_pad = 10
     y_pad = 5
     max_width = 200
-    font = ("Arial", 11)
+    font = ("Segoe UI Emoji", 11)
 
     # Calculate text size (for file, show icon and name)
     display_text = message
@@ -249,6 +249,17 @@ def setup_gui():
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     chat_canvas.configure(yscrollcommand=scrollbar.set)
 
+    # Enable mouse wheel scrolling for chat_canvas
+    def _on_mousewheel(event):
+        if os.name == 'nt':  # Windows
+            chat_canvas.yview_scroll(-1 * int(event.delta / 120), "units")
+        else:  # MacOS, Linux
+            chat_canvas.yview_scroll(-1 * int(event.delta), "units")
+
+    chat_canvas.bind_all("<MouseWheel>", _on_mousewheel)      # Windows
+    chat_canvas.bind_all("<Button-4>", lambda e: chat_canvas.yview_scroll(-1, "units"))  # Linux scroll up
+    chat_canvas.bind_all("<Button-5>", lambda e: chat_canvas.yview_scroll(1, "units"))   # Linux scroll down
+
     # Input area at the bottom
     input_frame = tk.Frame(root)
     input_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
@@ -302,6 +313,9 @@ def setup_gui():
         activeforeground="white"
     )
     send_file_button.pack(side=tk.LEFT, padx=(10, 5))
+
+    # Bind Enter key to send_message
+    message_input.bind('<Return>', lambda event: send_message())
 
     root.mainloop()
 
